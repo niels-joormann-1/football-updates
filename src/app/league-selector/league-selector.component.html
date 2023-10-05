@@ -1,0 +1,4 @@
+<button *ngFor="let league of leagues" id="{{league.country}}Select" [routerLink]="['/overview']"
+  [queryParams]="{leagueId: league.id}" class="btn btn-primary mr-2 ml-2">
+  {{league.country}} ({{league.name}})
+</button>

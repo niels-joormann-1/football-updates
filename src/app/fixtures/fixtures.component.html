@@ -1,0 +1,21 @@
+<h2>Fixtures<span *ngIf="teamName"> for {{teamName}}</span></h2>
+<div *ngIf="errors.length > 0" class="alert alert-danger" role="alert">
+  <p *ngFor="let error of errors">{{error}}</p>
+</div>
+<table *ngIf="fixtures.response.length > 0" class="table table-striped table-bordered table-responsive">
+  <thead>
+    <tr>
+      <th>Home</th>
+      <th>Score</th>
+      <th>Away</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let fixture of fixtures.response">
+      <td><img src="{{fixture.teams.home.logo}}" style="width: 50px;" /> {{fixture.teams.home.name}}</td>
+      <td>{{fixture.goals.home}} - {{fixture.goals.away}}</td>
+      <td><img src="{{fixture.teams.away.logo}}" style="width: 50px;" /> {{fixture.teams.away.name}}</td>
+    </tr>
+  </tbody>
+</table>
+<button [routerLink]="['/overview']" [queryParams]="{leagueId: leagueId}" class="btn btn-success">Back</button>

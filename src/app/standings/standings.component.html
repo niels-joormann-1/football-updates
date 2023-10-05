@@ -1,0 +1,31 @@
+<h2>Standings<span *ngIf="league"> for {{league.name}}</span></h2>
+<table *ngIf="standings" class="table table-striped table-bordered table-responsive">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Games</th>
+      <th>Win</th>
+      <th>Lose</th>
+      <th>Draw</th>
+      <th>Goal Difference</th>
+      <th>Points</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let standing of standings">
+      <td>{{standing.rank}}</td>
+      <td><a [routerLink]="['/fixtures']" [queryParams]="{
+        teamId: standing.team.id,
+        leagueId: league.id
+      }" (click)="selectTeam(standing.team.id)" style="cursor: pointer;"><img src="{{standing.team.logo}}"
+            style="width: 50px;" /> {{standing.team.name}}</a></td>
+      <td>{{standing.all.played}}</td>
+      <td>{{standing.all.win}}</td>
+      <td>{{standing.all.lose}}</td>
+      <td>{{standing.all.draw}}</td>
+      <td>{{standing.goalsDiff}}</td>
+      <td>{{standing.points}}</td>
+    </tr>
+  </tbody>
+</table>

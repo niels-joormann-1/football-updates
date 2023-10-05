@@ -1,14 +1,5 @@
 {
   "projects": {
     "default": "football-updates-ada1e"
-  },
-  "targets": {
-    "football-updates-ada1e": {
-      "hosting": {
-        "football-updates": [
-          "football-updates-ada1e"
-        ]
-      }
-    }
   }
 }

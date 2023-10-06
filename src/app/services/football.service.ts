@@ -17,49 +17,71 @@ export class FootballService {
   private fixtures = new BehaviorSubject<FixturesOverview>(new FixturesOverview());
   public fixtures$ = this.fixtures.asObservable();
 
-  getStandings(leagueId: number) {
+  checkCachedStandings(leagueId: number): boolean {
     let storedStandings = localStorage.getItem(`standings-${leagueId}`)
-    if (storedStandings != null) {
-      this.standings.next(JSON.parse(storedStandings))
+    if (storedStandings == null) {
+      return false;
     }
-    else {
-      this.httpClient
-        .get<StandingsOverview>(environment.standingsEndpoint, {
-          params: {
-            "league": leagueId,
-            "season": environment.currentYear
-          },
-          headers: {
-            "x-apisports-key": environment.apiKey
-          }
-        })
-        .subscribe(result => {
-          localStorage.setItem(`standings-${leagueId}`, JSON.stringify(result));
-          this.standings.next(result);
-        })
+
+    let parsedStoredStandings = JSON.parse(storedStandings) as StandingsOverview;
+    if (parsedStoredStandings.errors.requests) {
+      return false;
     }
+
+    this.standings.next(parsedStoredStandings);
+    return true;
+  }
+
+  getStandings(leagueId: number) {
+    if (this.checkCachedStandings(leagueId)) { return; }
+
+    this.httpClient
+      .get<StandingsOverview>(environment.standingsEndpoint, {
+        params: {
+          "league": leagueId,
+          "season": environment.currentYear
+        },
+        headers: {
+          "x-apisports-key": environment.apiKey
+        }
+      })
+      .subscribe(result => {
+        localStorage.setItem(`standings-${leagueId}`, JSON.stringify(result));
+        this.standings.next(result);
+      })
+  }
+
+  checkCachedFixtures(teamId: number) {
+    let storedFixtures = localStorage.getItem(`fixtures-${teamId}`);
+    if (storedFixtures == null) {
+      return false;
+    }
+
+    let cachedStoredFixtures = JSON.parse(storedFixtures) as FixturesOverview;
+    if (cachedStoredFixtures.errors.requests) {
+      return false;
+    }
+
+    this.fixtures.next(cachedStoredFixtures);
+    return true;
   }
 
   getFixtures(teamId: number) {
-    let storedFixtures = localStorage.getItem(`fixtures-${teamId}`);
-    if (storedFixtures != null) {
-      this.fixtures.next(JSON.parse(storedFixtures))
-    }
-    else {
-      this.httpClient
-        .get<FixturesOverview>(environment.fixturesEndpoint, {
-          params: {
-            "team": teamId,
-            "last": environment.recentFixtures
-          },
-          headers: {
-            "x-apisports-key": environment.apiKey
-          }
-        })
-        .subscribe(result => {
-          localStorage.setItem(`fixtures-${teamId}`, JSON.stringify(result))
-          this.fixtures.next(result);
-        })
-    }
+    if (this.checkCachedFixtures(teamId)) { return; }
+
+    this.httpClient
+      .get<FixturesOverview>(environment.fixturesEndpoint, {
+        params: {
+          "team": teamId,
+          "last": environment.recentFixtures
+        },
+        headers: {
+          "x-apisports-key": environment.apiKey
+        }
+      })
+      .subscribe(result => {
+        localStorage.setItem(`fixtures-${teamId}`, JSON.stringify(result))
+        this.fixtures.next(result);
+      })
   }
 }
